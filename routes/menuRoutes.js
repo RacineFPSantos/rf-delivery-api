@@ -1,9 +1,10 @@
 const express = require('express');
 const Menu = require('../models/Menu');
+const { auth, authorizeRoles } = require('../middleware/auth');
 const router = express.Router();
 
-//Get all menu items
-router.get('/', async (req, res) => {
+//Get all menu items (Clientes e Restaurantes)
+router.get('/', auth, async (req, res) => {
   try {
     const menu = await Menu.find();
     res.json(menu);
@@ -13,7 +14,7 @@ router.get('/', async (req, res) => {
 });
 
 //Add new menu item
-router.post('/', async (req, res) => {
+router.post('/', auth, authorizeRoles('restaurants'), async (req, res) => {
   const menuItem = new Menu({
     name: req.body.name,
     price: req.body.price,
